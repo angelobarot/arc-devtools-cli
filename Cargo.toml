@@ -1,0 +1,23 @@
+[package]
+name = "arc-devtools-cli"
+version = "0.1.0"
+edition = "2021"
+description = "Arc browser automation over the Chrome DevTools Protocol"
+authors = ["Angelo Barot"]
+license = "MIT"
+repository = "https://github.com/angelobarot/arc-devtools-cli"
+
+[[bin]]
+name = "arc-devtools"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1"
+base64 = "0.22"
+clap = { version = "4", features = ["derive"] }
+dirs = "5"
+futures-util = "0.3"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+tokio-tungstenite = "0.24"
