@@ -19,17 +19,37 @@ So `arc-devtools` probes the debug port and, if Arc isn't exposing it, quits and
 
 ## Installation
 
-Requires a Rust toolchain and macOS with Arc installed.
+macOS with [Arc](https://arc.net/) installed.
+
+### 1. Install Rust (provides `cargo`)
+
+If you don't already have it:
 
 ```bash
-# Install from git
+# Official installer (recommended)
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# …or via Homebrew
+brew install rust
+```
+
+After rustup, restart your shell (or `source "$HOME/.cargo/env"`) so `cargo` is on your PATH. Check with `cargo --version`.
+
+### 2. Install arc-devtools
+
+```bash
+# Install from git (puts `arc-devtools` in ~/.cargo/bin)
 cargo install --git https://github.com/angelobarot/arc-devtools-cli
 
 # …or build from a local clone
 cargo build --release   # → ./target/release/arc-devtools
 ```
 
-### Install the opencode skill
+> **No Rust on the target machine?** The binary is self-contained with no runtime
+> dependencies. Build it once, then copy `target/release/arc-devtools` to any dir
+> on PATH (e.g. `~/.cargo/bin` or `/usr/local/bin`) on another Mac of the same arch.
+
+### 3. Install the opencode skill
 
 The agent skill ships inside the binary. Install it into opencode and restart:
 
