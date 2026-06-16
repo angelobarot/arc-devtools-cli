@@ -96,6 +96,7 @@ Without `--target`, commands default to page index 0.
 |-------|----------|
 | Navigation | `navigate <url>` / `--back` / `--forward` / `--reload`, `new-page`, `close-page`, `select-page`, `list-pages` |
 | Inspection | `snapshot`, `screenshot [--output] [--full-page]`, `evaluate <expr>`, `record-video --output <mp4>` (needs ffmpeg) |
+| Diagnostics | `network [--navigate <url>] [--duration N] [--filter S]`, `console [--navigate <url>] [--duration N] [--level all\|warn\|error]`, `performance [--navigate <url>]` |
 | Interaction | `click`, `fill`, `type-text`, `press-key`, `hover` |
 | Other | `resize <w> <h>`, `wait-for <text> [--timeout ms]`, `install` |
 

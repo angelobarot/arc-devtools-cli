@@ -154,6 +154,39 @@ enum Commands {
         #[arg(long)]
         height: Option<u32>,
     },
+
+    /// Capture the network request waterfall
+    Network {
+        /// Navigate to this URL first, then capture
+        #[arg(long)]
+        navigate: Option<String>,
+        /// Capture window in seconds
+        #[arg(long, default_value_t = 5)]
+        duration: u64,
+        /// Only show requests whose URL contains this substring
+        #[arg(long)]
+        filter: Option<String>,
+    },
+
+    /// Capture console messages, exceptions, and browser logs
+    Console {
+        /// Navigate to this URL first, then capture
+        #[arg(long)]
+        navigate: Option<String>,
+        /// Capture window in seconds
+        #[arg(long, default_value_t = 5)]
+        duration: u64,
+        /// Minimum level to show: all, warn, error
+        #[arg(long, default_value = "all")]
+        level: String,
+    },
+
+    /// Snapshot page performance timings and engine metrics
+    Performance {
+        /// Navigate to this URL first, then measure
+        #[arg(long)]
+        navigate: Option<String>,
+    },
 }
 
 #[tokio::main]
@@ -245,6 +278,23 @@ fn build_request(
                 "height": height,
             }),
         ),
+        Commands::Network {
+            navigate,
+            duration,
+            filter,
+        } => (
+            "network",
+            json!({"navigate": navigate, "duration": duration, "filter": filter}),
+        ),
+        Commands::Console {
+            navigate,
+            duration,
+            level,
+        } => (
+            "console",
+            json!({"navigate": navigate, "duration": duration, "level": level}),
+        ),
+        Commands::Performance { navigate } => ("performance", json!({"navigate": navigate})),
     };
 
     DaemonRequest {
@@ -473,6 +523,34 @@ async fn run_direct(cli: &Cli, ws_url: &str) -> Result<String> {
                 max_height: *height,
             };
             commands::record_video::record_video(&mut client, &session_id, &params).await
+        }
+        Commands::Network {
+            navigate,
+            duration,
+            filter,
+        } => {
+            let params = commands::network::NetworkParams {
+                navigate: navigate.clone(),
+                duration_secs: *duration,
+                filter: filter.clone(),
+            };
+            commands::network::network(&mut client, &session_id, &params, cli.json).await
+        }
+        Commands::Console {
+            navigate,
+            duration,
+            level,
+        } => {
+            let params = commands::console::ConsoleParams {
+                navigate: navigate.clone(),
+                duration_secs: *duration,
+                level: level.clone(),
+            };
+            commands::console::console(&mut client, &session_id, &params, cli.json).await
+        }
+        Commands::Performance { navigate } => {
+            commands::performance::performance(&mut client, &session_id, navigate.as_deref(), cli.json)
+                .await
         }
         _ => unreachable!(),
     };

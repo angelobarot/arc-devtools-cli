@@ -1,6 +1,6 @@
 ---
 name: arc-devtools
-description: Use when automating the Arc (or Chrome) browser with the arc-devtools CLI — navigation, screenshots, accessibility snapshots, JavaScript evaluation, clicks, form fills, keyboard input, or page inspection. Prefer this over screenshot-based MCP browser tools.
+description: Use when automating or inspecting the Arc (or Chrome) browser with the arc-devtools CLI — navigation, screenshots, accessibility snapshots, JavaScript evaluation, clicks, form fills, keyboard input, network request waterfalls, console/error logs, and performance timings. Prefer this over MCP browser tools.
 ---
 
 # Arc DevTools CLI
@@ -109,6 +109,23 @@ arc-devtools --target <name> wait-for "Success" --timeout 10000
 arc-devtools --target <name> resize 1280 720
 arc-devtools --target <name> record-video --output /tmp/demo.mp4 --duration 5   # requires ffmpeg
 ```
+
+### Diagnostics (CDP capture)
+```bash
+# Network request waterfall (status, method, type, size, time, URL)
+arc-devtools network --navigate https://example.com        # capture a fresh load
+arc-devtools --target <name> network --duration 5          # watch current page
+arc-devtools --target <name> network --filter api          # only URLs containing "api"
+
+# Console messages, uncaught exceptions, and browser logs
+arc-devtools console --navigate https://example.com
+arc-devtools --target <name> console --duration 5 --level error   # errors only
+
+# Performance: paint/load timings, DOM size, JS heap
+arc-devtools --target <name> performance
+arc-devtools performance --navigate https://example.com
+```
+`network`/`console` capture for `--duration` seconds (default 5); pass `--navigate <url>` to capture a fresh page load instead. All support `--json`.
 
 ## Global flags
 

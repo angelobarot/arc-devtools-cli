@@ -247,6 +247,31 @@ async fn execute_command(client: &mut CdpClient, req: &DaemonRequest) -> Result<
             };
             commands::record_video::record_video(client, &session_id, &params).await
         }
+        "network" => {
+            let params = commands::network::NetworkParams {
+                navigate: args["navigate"].as_str().map(str::to_string),
+                duration_secs: args["duration"].as_u64().unwrap_or(5),
+                filter: args["filter"].as_str().map(str::to_string),
+            };
+            commands::network::network(client, &session_id, &params, req.json_output).await
+        }
+        "console" => {
+            let params = commands::console::ConsoleParams {
+                navigate: args["navigate"].as_str().map(str::to_string),
+                duration_secs: args["duration"].as_u64().unwrap_or(5),
+                level: args["level"].as_str().unwrap_or("all").to_string(),
+            };
+            commands::console::console(client, &session_id, &params, req.json_output).await
+        }
+        "performance" => {
+            commands::performance::performance(
+                client,
+                &session_id,
+                args["navigate"].as_str(),
+                req.json_output,
+            )
+            .await
+        }
         _ => Err(anyhow!("Unknown command: {cmd}")),
     };
 
