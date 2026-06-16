@@ -21,9 +21,8 @@ pub async fn navigate(
         return do_reload(client, session_id).await;
     }
 
-    let url = url.ok_or_else(|| {
-        anyhow::anyhow!("URL required (or use --back, --forward, --reload)")
-    })?;
+    let url =
+        url.ok_or_else(|| anyhow::anyhow!("URL required (or use --back, --forward, --reload)"))?;
 
     let result = client
         .send_to_target(session_id, "Page.navigate", json!({"url": url}))
@@ -43,9 +42,9 @@ async fn go_back(client: &mut CdpClient, session_id: &str) -> Result<String> {
         .await?;
 
     let current_index = history["currentIndex"].as_i64().unwrap_or(0);
-    let entries = history["entries"].as_array().ok_or_else(|| {
-        anyhow::anyhow!("No navigation history entries")
-    })?;
+    let entries = history["entries"]
+        .as_array()
+        .ok_or_else(|| anyhow::anyhow!("No navigation history entries"))?;
 
     if current_index <= 0 {
         bail!("Already at the beginning of history");
@@ -73,9 +72,9 @@ async fn go_forward(client: &mut CdpClient, session_id: &str) -> Result<String> 
         .await?;
 
     let current_index = history["currentIndex"].as_i64().unwrap_or(0) as usize;
-    let entries = history["entries"].as_array().ok_or_else(|| {
-        anyhow::anyhow!("No navigation history entries")
-    })?;
+    let entries = history["entries"]
+        .as_array()
+        .ok_or_else(|| anyhow::anyhow!("No navigation history entries"))?;
 
     if current_index + 1 >= entries.len() {
         bail!("Already at the end of history");
@@ -105,13 +104,8 @@ async fn do_reload(client: &mut CdpClient, session_id: &str) -> Result<String> {
     Ok("Reloaded page".to_string())
 }
 
-async fn wait_for_load(
-    client: &mut CdpClient,
-    session_id: &str,
-    timeout_ms: u64,
-) -> Result<()> {
-    let deadline =
-        tokio::time::Instant::now() + std::time::Duration::from_millis(timeout_ms);
+async fn wait_for_load(client: &mut CdpClient, session_id: &str, timeout_ms: u64) -> Result<()> {
+    let deadline = tokio::time::Instant::now() + std::time::Duration::from_millis(timeout_ms);
 
     tokio::time::sleep(std::time::Duration::from_millis(100)).await;
 

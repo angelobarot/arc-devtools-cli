@@ -177,8 +177,9 @@ fn http_request(port: u16, method: &str, path: &str) -> Result<String> {
             let body_start = h + 4;
             if let Some(len) = parse_content_length(&raw[..h]) {
                 if raw.len() - body_start >= len {
-                    return Ok(String::from_utf8_lossy(&raw[body_start..body_start + len])
-                        .into_owned());
+                    return Ok(
+                        String::from_utf8_lossy(&raw[body_start..body_start + len]).into_owned()
+                    );
                 }
             }
         }
@@ -209,9 +210,7 @@ fn http_request(port: u16, method: &str, path: &str) -> Result<String> {
 }
 
 fn find_subslice(haystack: &[u8], needle: &[u8]) -> Option<usize> {
-    haystack
-        .windows(needle.len())
-        .position(|w| w == needle)
+    haystack.windows(needle.len()).position(|w| w == needle)
 }
 
 fn parse_content_length(headers: &[u8]) -> Option<usize> {

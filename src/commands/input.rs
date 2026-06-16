@@ -35,8 +35,12 @@ async fn get_element_center(
         bail!("{err}");
     }
 
-    let x = val["x"].as_f64().ok_or_else(|| anyhow::anyhow!("Missing x coordinate"))?;
-    let y = val["y"].as_f64().ok_or_else(|| anyhow::anyhow!("Missing y coordinate"))?;
+    let x = val["x"]
+        .as_f64()
+        .ok_or_else(|| anyhow::anyhow!("Missing x coordinate"))?;
+    let y = val["y"]
+        .as_f64()
+        .ok_or_else(|| anyhow::anyhow!("Missing y coordinate"))?;
     Ok((x, y))
 }
 

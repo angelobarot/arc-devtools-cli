@@ -55,7 +55,10 @@ pub async fn select_page(client: &mut CdpClient, index: usize) -> Result<String>
         .get(index)
         .ok_or_else(|| anyhow!("No page at index {index} (have {} pages)", pages.len()))?;
     client.activate_target(&page.target_id).await?;
-    Ok(format!("Activated page [{index}]: {} — {}", page.title, page.url))
+    Ok(format!(
+        "Activated page [{index}]: {} — {}",
+        page.title, page.url
+    ))
 }
 
 pub async fn resize(
@@ -86,12 +89,9 @@ pub async fn wait_for(
     timeout_ms: u64,
 ) -> Result<String> {
     let escaped = text.replace('\\', "\\\\").replace('\'', "\\'");
-    let check_expr = format!(
-        "document.body && document.body.innerText.includes('{escaped}')"
-    );
+    let check_expr = format!("document.body && document.body.innerText.includes('{escaped}')");
 
-    let deadline = tokio::time::Instant::now()
-        + std::time::Duration::from_millis(timeout_ms);
+    let deadline = tokio::time::Instant::now() + std::time::Duration::from_millis(timeout_ms);
 
     loop {
         if tokio::time::Instant::now() > deadline {

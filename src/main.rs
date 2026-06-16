@@ -358,8 +358,7 @@ async fn run() -> Result<()> {
 
     let daemon_idle_timeout = resolve_daemon_idle_timeout(cli.daemon_idle_timeout.as_deref())?;
 
-    let ws_url =
-        browser::resolve_ws_url(cli.ws_endpoint.as_deref(), cli.user_data_dir.as_deref())?;
+    let ws_url = browser::resolve_ws_url(cli.ws_endpoint.as_deref(), cli.user_data_dir.as_deref())?;
 
     let request = build_request(&cli, daemon_idle_timeout);
 
@@ -549,8 +548,13 @@ async fn run_direct(cli: &Cli, ws_url: &str) -> Result<String> {
             commands::console::console(&mut client, &session_id, &params, cli.json).await
         }
         Commands::Performance { navigate } => {
-            commands::performance::performance(&mut client, &session_id, navigate.as_deref(), cli.json)
-                .await
+            commands::performance::performance(
+                &mut client,
+                &session_id,
+                navigate.as_deref(),
+                cli.json,
+            )
+            .await
         }
         _ => unreachable!(),
     };

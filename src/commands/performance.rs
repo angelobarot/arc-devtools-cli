@@ -69,10 +69,22 @@ pub async fn performance(
 
     let mut out = String::from("Page timings:\n");
     out.push_str(&format!("  TTFB:                    {}\n", ms(&s["ttfb"])));
-    out.push_str(&format!("  First Paint:             {}\n", ms(&s["firstPaint"])));
-    out.push_str(&format!("  First Contentful Paint:  {}\n", ms(&s["firstContentfulPaint"])));
-    out.push_str(&format!("  DOM Interactive:         {}\n", ms(&s["domInteractive"])));
-    out.push_str(&format!("  DOMContentLoaded:        {}\n", ms(&s["domContentLoaded"])));
+    out.push_str(&format!(
+        "  First Paint:             {}\n",
+        ms(&s["firstPaint"])
+    ));
+    out.push_str(&format!(
+        "  First Contentful Paint:  {}\n",
+        ms(&s["firstContentfulPaint"])
+    ));
+    out.push_str(&format!(
+        "  DOM Interactive:         {}\n",
+        ms(&s["domInteractive"])
+    ));
+    out.push_str(&format!(
+        "  DOMContentLoaded:        {}\n",
+        ms(&s["domContentLoaded"])
+    ));
     out.push_str(&format!("  Load:                    {}\n", ms(&s["load"])));
 
     out.push_str("Page weight:\n");
