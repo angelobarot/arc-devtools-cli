@@ -38,12 +38,16 @@ After rustup, restart your shell (or `source "$HOME/.cargo/env"`) so `cargo` is 
 ### 2. Install arc-devtools
 
 ```bash
-# Install from git (puts `arc-devtools` in ~/.cargo/bin)
+# One-shot: install the latest + register the opencode skill (recommended)
+curl -fsSL https://raw.githubusercontent.com/angelobarot/arc-devtools-cli/main/install.sh | sh
+
+# …or just the binary
 cargo install --git https://github.com/angelobarot/arc-devtools-cli
 
-# …or build from a local clone
-cargo build --release   # → ./target/release/arc-devtools
+# …or from a local clone:  ./install.sh --local   (or)   cargo build --release
 ```
+
+The `install.sh` script also runs step 3 for you (and `--force`-upgrades an existing install).
 
 > **No Rust on the target machine?** The binary is self-contained with no runtime
 > dependencies. Build it once, then copy `target/release/arc-devtools` to any dir
