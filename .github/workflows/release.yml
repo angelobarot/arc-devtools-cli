@@ -1,0 +1,102 @@
+name: Release
+
+# Triggered when you push a version tag, e.g. `git push origin v0.1.0`.
+# You stay in control: bump the version, tag, and push by hand — this workflow
+# only builds the macOS binaries and publishes the GitHub Release for that tag.
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+  BIN_NAME: arc-devtools
+
+jobs:
+  validate:
+    name: Validate tag
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - name: Check tag format and Cargo.toml version match
+        run: |
+          # Only accept strict vMAJOR.MINOR.PATCH tags (avoids publishing
+          # accidental tags like `vtest` or `v0.1.0-foo`).
+          if [[ ! "${GITHUB_REF_NAME}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Tag '${GITHUB_REF_NAME}' is not a vMAJOR.MINOR.PATCH version tag." >&2
+            exit 1
+          fi
+          # Tag must match the version embedded in the binary.
+          crate_version=$(cargo metadata --no-deps --format-version 1 \
+            | jq -r '.packages[] | select(.name=="arc-devtools-cli") | .version')
+          expected="v${crate_version}"
+          if [[ "${GITHUB_REF_NAME}" != "${expected}" ]]; then
+            echo "::error::Tag '${GITHUB_REF_NAME}' does not match Cargo.toml version (expected '${expected}')." >&2
+            exit 1
+          fi
+          echo "Tag ${GITHUB_REF_NAME} validated against Cargo.toml."
+
+  build:
+    name: Build ${{ matrix.target }}
+    needs: validate
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        target:
+          - aarch64-apple-darwin # Apple Silicon
+          - x86_64-apple-darwin # Intel
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - run: rustup toolchain install stable --profile minimal
+      - run: rustup target add ${{ matrix.target }}
+      - run: cargo build --release --locked --target ${{ matrix.target }}
+      - name: Package tarball
+        run: |
+          dist="${BIN_NAME}-${GITHUB_REF_NAME}-${{ matrix.target }}"
+          mkdir "$dist"
+          cp "target/${{ matrix.target }}/release/${BIN_NAME}" "$dist/"
+          cp README.md LICENSE "$dist/"
+          tar -czf "${dist}.tar.gz" "$dist"
+          shasum -a 256 "${dist}.tar.gz" > "${dist}.tar.gz.sha256"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ${{ matrix.target }}
+          path: |
+            *.tar.gz
+            *.tar.gz.sha256
+
+  release:
+    name: Publish release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # required to create the GitHub Release
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Idempotent: if a rerun finds the release already exists (e.g. a prior
+          # run created it but failed mid-upload), refresh its assets instead of
+          # failing. Otherwise create it fresh with auto-generated notes.
+          if gh release view "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            echo "Release ${GITHUB_REF_NAME} already exists; updating assets."
+            gh release upload "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" --clobber dist/*
+          else
+            gh release create "${GITHUB_REF_NAME}" \
+              --repo "${GITHUB_REPOSITORY}" \
+              --title "${GITHUB_REF_NAME}" \
+              --generate-notes \
+              dist/*
+          fi

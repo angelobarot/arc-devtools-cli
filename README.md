@@ -41,13 +41,30 @@ After rustup, restart your shell (or `source "$HOME/.cargo/env"`) so `cargo` is 
 # One-shot: install the latest + register the opencode skill (recommended)
 curl -fsSL https://raw.githubusercontent.com/angelobarot/arc-devtools-cli/main/install.sh | sh
 
-# …or just the binary
+# …or just the binary (latest main)
 cargo install --git https://github.com/angelobarot/arc-devtools-cli
+
+# …or pin to a released version
+cargo install --git https://github.com/angelobarot/arc-devtools-cli --tag v0.1.0
 
 # …or from a local clone:  ./install.sh --local   (or)   cargo build --release
 ```
 
 The `install.sh` script also runs step 3 for you (and `--force`-upgrades an existing install).
+
+**No Rust?** Each [release](https://github.com/angelobarot/arc-devtools-cli/releases) ships prebuilt macOS binaries for Apple Silicon (`aarch64-apple-darwin`) and Intel (`x86_64-apple-darwin`). Download the matching `.tar.gz` and its `.sha256`, verify, extract, then move `arc-devtools` onto your PATH:
+
+```bash
+# Verify the download (run in the dir containing both files)
+shasum -a 256 -c arc-devtools-v0.1.0-aarch64-apple-darwin.tar.gz.sha256
+
+tar -xzf arc-devtools-v0.1.0-aarch64-apple-darwin.tar.gz
+mkdir -p /usr/local/bin
+mv arc-devtools-v0.1.0-aarch64-apple-darwin/arc-devtools /usr/local/bin/   # or ~/.cargo/bin
+```
+
+> macOS may block the unsigned binary on first run ("cannot be opened"). Clear the
+> quarantine flag, then run it: `xattr -d com.apple.quarantine /usr/local/bin/arc-devtools`
 
 > **No Rust on the target machine?** The binary is self-contained with no runtime
 > dependencies. Build it once, then copy `target/release/arc-devtools` to any dir
