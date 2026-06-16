@@ -1,5 +1,6 @@
 pub mod console;
 pub mod evaluate;
+pub mod format;
 pub mod input;
 pub mod navigate;
 pub mod network;

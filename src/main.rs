@@ -161,7 +161,7 @@ enum Commands {
         #[arg(long)]
         navigate: Option<String>,
         /// Capture window in seconds
-        #[arg(long, default_value_t = 5)]
+        #[arg(long, default_value_t = 5, value_parser = clap::value_parser!(u64).range(1..))]
         duration: u64,
         /// Only show requests whose URL contains this substring
         #[arg(long)]
@@ -174,10 +174,10 @@ enum Commands {
         #[arg(long)]
         navigate: Option<String>,
         /// Capture window in seconds
-        #[arg(long, default_value_t = 5)]
+        #[arg(long, default_value_t = 5, value_parser = clap::value_parser!(u64).range(1..))]
         duration: u64,
-        /// Minimum level to show: all, warn, error
-        #[arg(long, default_value = "all")]
+        /// Minimum level to show
+        #[arg(long, default_value = "all", value_parser = ["all", "warn", "warning", "error"])]
         level: String,
     },
 

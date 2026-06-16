@@ -1,7 +1,8 @@
-use anyhow::Result;
+use anyhow::{anyhow, bail, Result};
 use serde_json::{json, Value};
 
 use crate::cdp::CdpClient;
+use crate::commands::format::human_bytes;
 
 const SNAPSHOT_JS: &str = r#"(() => {
   const nav = performance.getEntriesByType('navigation')[0] || {};
@@ -42,10 +43,20 @@ pub async fn performance(
             json!({"expression": SNAPSHOT_JS, "returnByValue": true}),
         )
         .await?;
-    let s: Value = eval["result"]["value"]
+    if let Some(exc) = eval.get("exceptionDetails") {
+        bail!(
+            "performance snapshot failed: {}",
+            exc["exception"]["description"]
+                .as_str()
+                .or_else(|| exc["text"].as_str())
+                .unwrap_or("evaluation error")
+        );
+    }
+    let raw = eval["result"]["value"]
         .as_str()
-        .and_then(|s| serde_json::from_str(s).ok())
-        .unwrap_or_else(|| json!({}));
+        .ok_or_else(|| anyhow!("unexpected performance result (no string value)"))?;
+    let s: Value = serde_json::from_str(raw)
+        .map_err(|e| anyhow!("could not parse performance snapshot: {e}"))?;
 
     if json_output {
         return Ok(serde_json::to_string_pretty(&s)?);
@@ -84,19 +95,4 @@ pub async fn performance(
     }
 
     Ok(out.trim_end().to_string())
-}
-
-fn human_bytes(n: f64) -> String {
-    const UNITS: [&str; 4] = ["B", "KB", "MB", "GB"];
-    let mut v = n;
-    let mut u = 0;
-    while v >= 1024.0 && u < UNITS.len() - 1 {
-        v /= 1024.0;
-        u += 1;
-    }
-    if u == 0 {
-        format!("{}B", v.round() as i64)
-    } else {
-        format!("{v:.1}{}", UNITS[u])
-    }
 }
