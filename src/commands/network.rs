@@ -181,8 +181,9 @@ async fn capture(
             "Network.loadingFinished" => {
                 if let Some(&i) = current.get(p["requestId"].as_str().unwrap_or("")) {
                     entries[i].end_ms = Some(p["timestamp"].as_f64().unwrap_or(0.0) * 1000.0);
-                    entries[i].encoded_len =
-                        p["encodedDataLength"].as_f64().unwrap_or(entries[i].encoded_len);
+                    entries[i].encoded_len = p["encodedDataLength"]
+                        .as_f64()
+                        .unwrap_or(entries[i].encoded_len);
                 }
             }
             "Network.loadingFailed" => {
@@ -200,7 +201,5 @@ async fn capture(
 
 /// Request duration in ms, only when both endpoints are known and sane.
 fn duration_ms(r: &Request) -> Option<f64> {
-    r.end_ms
-        .map(|e| e - r.start_ms)
-        .filter(|&d| d >= 0.0)
+    r.end_ms.map(|e| e - r.start_ms).filter(|&d| d >= 0.0)
 }

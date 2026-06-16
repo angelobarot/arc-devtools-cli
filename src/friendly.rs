@@ -1,25 +1,21 @@
 /// Deterministic friendly name from a target ID, e.g. "bold-fox".
 /// Same target ID always produces the same name.
 const ADJECTIVES: &[&str] = &[
-    "amber", "bold", "brave", "bright", "calm", "clear", "cool", "crisp",
-    "dark", "deep", "eager", "fair", "fast", "firm", "fond", "free",
-    "glad", "gold", "grand", "green", "happy", "hazy", "icy", "keen",
-    "kind", "late", "lean", "light", "live", "lone", "loud", "lucky",
-    "mild", "misty", "neat", "noble", "odd", "pale", "pink", "plain",
-    "proud", "pure", "quick", "quiet", "rapid", "rare", "red", "rich",
-    "rough", "royal", "rusty", "safe", "sharp", "shy", "slim", "slow",
-    "snowy", "soft", "solar", "steep", "swift", "tame", "tidy", "warm",
+    "amber", "bold", "brave", "bright", "calm", "clear", "cool", "crisp", "dark", "deep", "eager",
+    "fair", "fast", "firm", "fond", "free", "glad", "gold", "grand", "green", "happy", "hazy",
+    "icy", "keen", "kind", "late", "lean", "light", "live", "lone", "loud", "lucky", "mild",
+    "misty", "neat", "noble", "odd", "pale", "pink", "plain", "proud", "pure", "quick", "quiet",
+    "rapid", "rare", "red", "rich", "rough", "royal", "rusty", "safe", "sharp", "shy", "slim",
+    "slow", "snowy", "soft", "solar", "steep", "swift", "tame", "tidy", "warm",
 ];
 
 const NOUNS: &[&str] = &[
-    "ant", "bat", "bear", "bee", "bird", "bull", "cat", "cod",
-    "colt", "crab", "crow", "deer", "dog", "dove", "duck", "eagle",
-    "eel", "elk", "fawn", "fish", "fly", "fox", "frog", "goat",
-    "hawk", "hare", "hen", "hog", "jay", "koi", "lamb", "lark",
-    "lion", "lynx", "mole", "moth", "mule", "newt", "orca", "owl",
-    "ox", "puma", "quail", "ram", "rat", "rook", "seal", "shrew",
-    "slug", "snail", "snake", "squid", "stag", "swan", "toad", "trout",
-    "vole", "wasp", "whale", "wolf", "wren", "yak", "zebra", "finch",
+    "ant", "bat", "bear", "bee", "bird", "bull", "cat", "cod", "colt", "crab", "crow", "deer",
+    "dog", "dove", "duck", "eagle", "eel", "elk", "fawn", "fish", "fly", "fox", "frog", "goat",
+    "hawk", "hare", "hen", "hog", "jay", "koi", "lamb", "lark", "lion", "lynx", "mole", "moth",
+    "mule", "newt", "orca", "owl", "ox", "puma", "quail", "ram", "rat", "rook", "seal", "shrew",
+    "slug", "snail", "snake", "squid", "stag", "swan", "toad", "trout", "vole", "wasp", "whale",
+    "wolf", "wren", "yak", "zebra", "finch",
 ];
 
 /// Simple hash of a string to a u64.

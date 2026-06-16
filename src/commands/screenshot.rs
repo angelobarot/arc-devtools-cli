@@ -53,7 +53,10 @@ pub async fn take_screenshot(
     match output {
         Some(path) => {
             std::fs::write(path, &bytes)?;
-            Ok(format!("Screenshot saved to {path} ({} bytes)", bytes.len()))
+            Ok(format!(
+                "Screenshot saved to {path} ({} bytes)",
+                bytes.len()
+            ))
         }
         None => {
             // Return raw base64 (agent can read it)

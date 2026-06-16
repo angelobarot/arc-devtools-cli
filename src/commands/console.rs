@@ -138,10 +138,12 @@ async fn capture(
                 entries.push(Entry {
                     level: normalize_level(entry["level"].as_str().unwrap_or("info")),
                     text: entry["text"].as_str().unwrap_or("").to_string(),
-                    location: entry["url"].as_str().map(|u| match entry["lineNumber"].as_i64() {
-                        Some(l) => format!("{u}:{}", l + 1),
-                        None => u.to_string(),
-                    }),
+                    location: entry["url"]
+                        .as_str()
+                        .map(|u| match entry["lineNumber"].as_i64() {
+                            Some(l) => format!("{u}:{}", l + 1),
+                            None => u.to_string(),
+                        }),
                 });
             }
             _ => {}

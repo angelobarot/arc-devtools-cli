@@ -234,9 +234,7 @@ async fn execute_command(client: &mut CdpClient, req: &DaemonRequest) -> Result<
             commands::pages::wait_for(client, &session_id, text, timeout).await
         }
         "record-video" => {
-            let output = args["output"]
-                .as_str()
-                .ok_or(anyhow!("output required"))?;
+            let output = args["output"].as_str().ok_or(anyhow!("output required"))?;
             let params = commands::record_video::RecordVideoParams {
                 output: output.to_string(),
                 duration_secs: args["duration"].as_u64().unwrap_or(5),

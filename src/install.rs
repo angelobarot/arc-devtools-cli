@@ -26,7 +26,10 @@ pub fn install_skill(dir: Option<&str>) -> Result<()> {
         .with_context(|| format!("writing skill file {}", skill_file.display()))?;
 
     let verb = if existed { "Updated" } else { "Installed" };
-    println!("{verb} the '{SKILL_NAME}' skill at {}", skill_file.display());
+    println!(
+        "{verb} the '{SKILL_NAME}' skill at {}",
+        skill_file.display()
+    );
     println!("Restart opencode to load it.");
     Ok(())
 }
@@ -42,7 +45,10 @@ fn default_skills_dir() -> Result<PathBuf> {
 fn shellexpand_home(path: &str) -> String {
     if path == "~" || path.starts_with("~/") {
         if let Some(home) = dirs::home_dir() {
-            let rest = path.strip_prefix("~/").or_else(|| path.strip_prefix('~')).unwrap_or("");
+            let rest = path
+                .strip_prefix("~/")
+                .or_else(|| path.strip_prefix('~'))
+                .unwrap_or("");
             return home.join(rest).to_string_lossy().into_owned();
         }
     }
